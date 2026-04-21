@@ -1,5 +1,11 @@
 #Lists
-lucky_numbers = [4,8,15,16,23,4, 8, 2, ]
-friends = ["Kevin", "Karen", "Jim", "Jim", "Oscar", "Toby"]
-friends2 = friends.copy()
-print(friends2)
+number_grid = [
+    [1,2,3], 
+    [4,5,6],
+    [7,8,9],
+    [0]
+]
+
+for row in number_grid:
+    for col in row:
+        print(col)
