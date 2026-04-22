@@ -1,0 +1,31 @@
+N8N (N8N Workflow Automation) and Ollama are two popular tools that help businesses automate repetitive tasks.
+
+**How they work together:**
+
+1. **Integrations:** N8N allows you to connect different apps and services, like Google Drive, Slack, or Trello,
+using its API connectors.
+2. **Ollama:** Ollama is an automation platform that helps you create automated workflows (or "recipes") by
+connecting apps and services.
+
+**How they work together in business automation:**
+
+Imagine you have a workflow where:
+
+* A new customer signs up for your service on Google Forms (app connected to N8N).
+* The sign-up form data is sent to a Trello board (app connected to Ollama) for review.
+* If approved, the data is automatically saved to a Google Drive folder (app connected to N8N).
+
+Here's how they work together:
+
+1. You set up an integration in N8N between your Google Forms app and Ollama's recipe builder.
+2. When a new customer submits the form on Google Forms, it sends a trigger event to Ollama.
+3. Ollama receives the event and uses its recipe builder to connect to your Trello board (with another
+integration).
+4. The data from the sign-up form is automatically pulled into your Trello board for review.
+5. Once approved, Ollama connects to Google Drive (again) and saves the updated data in a designated folder.
+
+By working together, N8N and Ollama help automate tedious tasks, freeing up your time to focus on more important business
+activities.
+
+Keep in mind that this is just an example, but both tools can be connected to many different apps and services, allowing for
+endless automation possibilities.
