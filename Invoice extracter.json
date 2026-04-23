@@ -1,0 +1,145 @@
+{
+  "name": "Invoice extracter",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "288428c5-ce5b-4a80-839a-f51fce309d5c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/.n8n-files/test_invoice.pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "1140a6a2-7965-4a46-9d96-bcf81c8ad468",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "77938769-9fc5-4300-89dc-035bda7cbed4",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the invoice text:",
+        "options": {
+          "systemMessage": "You are a robotic data extractor for invoices. Extract ONLY what is explicitly written in the provided text. Do not guess, do not use knowledge from training, do not invent anything.\n\nReturn ONLY clean JSON. No extra text.\n\n{\n  \"invoice_number\": \"exact value or NOT_FOUND\",\n  \"invoice_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"due_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"vendor_name\": \"exact value or NOT_FOUND\",\n  \"total_amount\": number or 0,\n  \"currency\": \"INR or NOT_FOUND\",\n  \"description\": \"exact value or NOT_FOUND\"\n}\n\nStrict Rules:\n- Copy text exactly.\n- Convert date to YYYY-MM-DD format if possible.\n- total_amount must be pure number (remove ₹ and commas).\n- If missing or unclear, use \"NOT_FOUND\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "d44c0ba4-5ec2-4048-a69e-8b73fa140346",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "phi3:mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        752,
+        208
+      ],
+      "id": "3ae9add8-45a3-40d2-9570-173b19c34a4b",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "uKcouPZZL1gzZ0oD",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "37f4f9e8-b4b5-464e-b5c4-6279bcf8a265",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ef020aad1a8fa061bdbf1293332b08da828f4b09b111a8b052e253ff48a28fd"
+  },
+  "id": "x0XUawDCgONFyjLM",
+  "tags": []
+}
