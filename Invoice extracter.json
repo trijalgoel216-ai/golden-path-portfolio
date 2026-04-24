@@ -42,24 +42,7 @@
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "=Here is the invoice text:",
-        "options": {
-          "systemMessage": "You are a robotic data extractor for invoices. Extract ONLY what is explicitly written in the provided text. Do not guess, do not use knowledge from training, do not invent anything.\n\nReturn ONLY clean JSON. No extra text.\n\n{\n  \"invoice_number\": \"exact value or NOT_FOUND\",\n  \"invoice_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"due_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"vendor_name\": \"exact value or NOT_FOUND\",\n  \"total_amount\": number or 0,\n  \"currency\": \"INR or NOT_FOUND\",\n  \"description\": \"exact value or NOT_FOUND\"\n}\n\nStrict Rules:\n- Copy text exactly.\n- Convert date to YYYY-MM-DD format if possible.\n- total_amount must be pure number (remove ₹ and commas).\n- If missing or unclear, use \"NOT_FOUND\"."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        672,
-        -16
-      ],
-      "id": "d44c0ba4-5ec2-4048-a69e-8b73fa140346",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": "phi3:mini",
+        "model": "llama3.2:3b",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
@@ -74,6 +57,117 @@
         "ollamaApi": {
           "id": "uKcouPZZL1gzZ0oD",
           "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const parsed = JSON.parse($json.output);\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -16
+      ],
+      "id": "4d3423a8-96a1-4c82-bc5f-48abf5ef3661",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract data from this invoice:{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a robotic data extractor for invoices. Extract ONLY what is explicitly written in the provided text. Do not guess, do not use knowledge from training, do not invent anything.\n\nReturn ONLY clean JSON. No extra text.\n\n{\n  \"invoice_number\": \"exact value or NOT_FOUND\",\n  \"invoice_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"due_date\": \"YYYY-MM-DD or NOT_FOUND\",\n  \"vendor_name\": \"exact value or NOT_FOUND\",\n  \"total_amount\": number or 0,\n  \"currency\": \"INR or NOT_FOUND\",\n  \"description\": \"exact value or NOT_FOUND\"\n}\n\nStrict Rules:\n- Copy text exactly.\n- Convert date to YYYY-MM-DD format if possible.\n- total_amount must be pure number (remove ₹ and commas).\n- If missing or unclear, use \"NOT_FOUND\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "d44c0ba4-5ec2-4048-a69e-8b73fa140346",
+      "name": "SovereignFlow Brain"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Pv3roLXeZDzI5zDn3ZYHL9wKCWHXW3u5M9FA8t5_x70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invoice Number": "={{$json.invoice_number}}",
+            "Vendor Name": "={{$json.vendor_name}}",
+            "Total Amount": "={{$json.total_amount}}",
+            "Status": "=PASSED"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Vendor Name",
+              "displayName": "Vendor Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        -16
+      ],
+      "id": "71009b9c-283a-4312-bb0c-6453744d5c83",
+      "name": "Client Audit Dashboard",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7TWkwielwRdzr8wV",
+          "name": "Google Sheets account"
         }
       }
     }
@@ -106,7 +200,7 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "SovereignFlow Brain",
             "type": "main",
             "index": 0
           }
@@ -117,16 +211,33 @@
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "SovereignFlow Brain",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent": {
+    "Code in JavaScript": {
       "main": [
-        []
+        [
+          {
+            "node": "Client Audit Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SovereignFlow Brain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -135,7 +246,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "37f4f9e8-b4b5-464e-b5c4-6279bcf8a265",
+  "versionId": "5860861d-f52d-49ca-876e-785d1bc7e352",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2ef020aad1a8fa061bdbf1293332b08da828f4b09b111a8b052e253ff48a28fd"
